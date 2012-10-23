@@ -1,4 +1,4 @@
-# Varnish::Purger
+# Purger
 
 Purge varnish via bans. Work in pair with https://github.com/hellvinz/purger
 
@@ -6,7 +6,7 @@ Purge varnish via bans. Work in pair with https://github.com/hellvinz/purger
 
 Add this line to your application's Gemfile:
 
-    gem 'varnish-purger'
+    gem 'purger'
 
 And then execute:
 
@@ -14,7 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install varnish-purger
+    $ gem install purger
 
 ## Usage
 
@@ -23,10 +23,10 @@ The purger in a singleton that you need to configure via config!
 To issue a purge call the method purge with a pattern (that varnish bans understand)
 
 ```
-require 'varnish-purger'
-varnish_purger = Varnish::Purger.instance
-varnish_purger.config!(127.0.0.1, 8080) unless varnish_purger.configured
-error = varnish.purge(".*.jpg")
+require 'purger'
+purger = Purger.instance
+purger.config!(127.0.0.1, 8080) unless purger.configured
+error = purger.purge(".*.jpg")
 puts 'purged!' unless error
 ```
 

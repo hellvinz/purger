@@ -1,21 +1,21 @@
 require 'minitest/spec'
 require 'minitest/autorun'
-require './lib/varnish-purger'
+require './lib/purger'
 
-describe Varnish::Purger do
+describe Purger do
   after do
-    instance = Varnish::Purger.instance
+    instance = Purger.instance
     instance.instance_variable_set(:@zmq_socket, nil)
     instance.instance_variable_set(:@configured, false)
   end
 
   it "should not be configured by default" do
-    Varnish::Purger.instance.configured.must_equal false
+    Purger.instance.configured.must_equal false
   end
 
   it "should not be configured because the zmq context creation failed" do
     ZMQ::Context.stub :new, nil do
-      Varnish::Purger.instance.config!('localhost', 3128).must_equal :context_creation_failed
+      Purger.instance.config!('localhost', 3128).must_equal :context_creation_failed
     end
   end
 
@@ -25,7 +25,7 @@ describe Varnish::Purger do
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
     ZMQ::Context.stub :new, context_mock do
-      Varnish::Purger.instance.config!('localhost', 3128).must_equal :socket_connection_failed
+      Purger.instance.config!('localhost', 3128).must_equal :socket_connection_failed
     end
   end
 
@@ -35,7 +35,7 @@ describe Varnish::Purger do
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
     ZMQ::Context.stub :new, context_mock do
-      instance = Varnish::Purger.instance
+      instance = Purger.instance
       instance.config!('localhost', 3128).must_be_nil
       instance.configured.must_equal true
     end
@@ -47,11 +47,11 @@ describe Varnish::Purger do
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
     ZMQ::Context.stub :new, context_mock do
-      instance = Varnish::Purger.instance
+      instance = Purger.instance
       instance.config!('localhost', 3128)
     end
 
-    Varnish::Purger.instance.config!('bim',1234).must_equal :already_configured
+    Purger.instance.config!('bim',1234).must_equal :already_configured
   end
 
   it "should return nil when the purge succeed" do
@@ -62,10 +62,10 @@ describe Varnish::Purger do
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
     ZMQ::Context.stub :new, context_mock do
-      instance = Varnish::Purger.instance
+      instance = Purger.instance
       instance.config!('localhost', 3128)
     end
 
-    Varnish::Purger.instance.purge(".*bla").must_be_nil
+    Purger.instance.purge(".*bla").must_be_nil
   end
 end
