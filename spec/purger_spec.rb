@@ -54,6 +54,34 @@ describe Purger do
     Purger.instance.config!('bim',1234).must_equal :already_configured
   end
 
+  it "should return :not_configured when the purge is called on a non configured object" do
+    socket_mock = MiniTest::Mock.new
+    socket_mock.expect(:connect, 0, ["tcp://localhost:3128"])
+    socket_mock.expect(:send_string, nil, [".*bla"])
+    socket_mock.expect(:receive_string, "ok", [""])
+    context_mock = MiniTest::Mock.new
+    context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
+    ZMQ::Context.stub :new, context_mock do
+      instance = Purger.instance
+    end
+
+    Purger.instance.purge(".*bla").must_equal :not_configured
+  end
+
+  it "should return :error when the purge failed" do
+    socket_mock = MiniTest::Mock.new
+    socket_mock.expect(:connect, 0, ["tcp://localhost:3128"])
+    socket_mock.expect(:send_string, nil, [".*bla"])
+    context_mock = MiniTest::Mock.new
+    context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
+    ZMQ::Context.stub :new, context_mock do
+      instance = Purger.instance
+      instance.config!('localhost', 3128)
+    end
+
+    Purger.instance.purge(".*bla").must_equal :error
+  end
+
   it "should return nil when the purge succeed" do
     socket_mock = MiniTest::Mock.new
     socket_mock.expect(:connect, 0, ["tcp://localhost:3128"])

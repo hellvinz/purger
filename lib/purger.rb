@@ -34,7 +34,7 @@ class Purger
     response = ""
     @zmq_socket.receive_string response
     return nil
-  ensure
-    :error
+  rescue
+    return :error
   end
 end
