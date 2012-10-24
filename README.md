@@ -1,6 +1,6 @@
 # Purger
 
-Purge varnish via bans. Work in pair with https://github.com/hellvinz/purger
+Purge varnish via bans. Work in pair with https://github.com/hellvinz/purgerd
 
 ## Installation
 
