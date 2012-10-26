@@ -1,5 +1,6 @@
 require "purger/version"
 require "ffi-rzmq"
+require "singleton"
 
 class Purger
   #Singleton because we don't want to have lots of connections to the purge forwarder
@@ -32,7 +33,7 @@ class Purger
     return :not_configured unless @configured
     @zmq_socket.send_string(pattern)
     response = ""
-    @zmq_socket.receive_string response
+    @zmq_socket.recv_string response
     return nil
   rescue
     return :error

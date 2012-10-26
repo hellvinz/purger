@@ -86,7 +86,7 @@ describe Purger do
     socket_mock = MiniTest::Mock.new
     socket_mock.expect(:connect, 0, ["tcp://localhost:3128"])
     socket_mock.expect(:send_string, nil, [".*bla"])
-    socket_mock.expect(:receive_string, "ok", [""])
+    socket_mock.expect(:recv_string, "ok", [""])
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
     ZMQ::Context.stub :new, context_mock do
