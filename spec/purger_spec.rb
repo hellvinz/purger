@@ -6,6 +6,7 @@ describe Purger do
   after do
     instance = Purger.instance
     instance.instance_variable_set(:@zmq_socket, nil)
+    instance.instance_variable_set(:@zmq_context, nil)
     instance.instance_variable_set(:@configured, false)
   end
 
@@ -24,9 +25,9 @@ describe Purger do
     socket_mock.expect(:connect, -1, ["tcp://localhost:3128"])
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
-    ZMQ::Context.stub :new, context_mock do
-      Purger.instance.config!('localhost', 3128).must_equal :socket_connection_failed
-    end
+    Purger.instance.instance_variable_set(:@zmq_context, context_mock)
+    Purger.instance.instance_variable_set(:@zmq_socket, socket_mock)
+    Purger.instance.config!('localhost', 3128).must_equal :socket_connection_failed
   end
 
   it "should be configured" do
@@ -34,11 +35,11 @@ describe Purger do
     socket_mock.expect(:connect, 0, ["tcp://localhost:3128"])
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
-    ZMQ::Context.stub :new, context_mock do
-      instance = Purger.instance
-      instance.config!('localhost', 3128).must_be_nil
-      instance.configured.must_equal true
-    end
+    instance = Purger.instance
+    instance.instance_variable_set(:@zmq_context, context_mock)
+    instance.instance_variable_set(:@zmq_socket, socket_mock)
+    instance.config!('localhost', 3128).must_be_nil
+    instance.configured.must_equal true
   end
 
   it "should not be reconfigured" do
@@ -46,11 +47,10 @@ describe Purger do
     socket_mock.expect(:connect, 0, ["tcp://localhost:3128"])
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
-    ZMQ::Context.stub :new, context_mock do
-      instance = Purger.instance
-      instance.config!('localhost', 3128)
-    end
-
+    Purger.instance.instance_variable_set(:@zmq_context, context_mock)
+    Purger.instance.instance_variable_set(:@zmq_socket, socket_mock)
+    instance = Purger.instance
+    instance.config!('localhost', 3128)
     Purger.instance.config!('bim',1234).must_equal :already_configured
   end
 
@@ -61,9 +61,9 @@ describe Purger do
     socket_mock.expect(:receive_string, "ok", [""])
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
-    ZMQ::Context.stub :new, context_mock do
-      instance = Purger.instance
-    end
+    Purger.instance.instance_variable_set(:@zmq_context, context_mock)
+    Purger.instance.instance_variable_set(:@zmq_socket, socket_mock)
+    instance = Purger.instance
 
     Purger.instance.purge(".*bla").must_equal :not_configured
   end
@@ -74,10 +74,10 @@ describe Purger do
     socket_mock.expect(:send_string, nil, [".*bla"])
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
-    ZMQ::Context.stub :new, context_mock do
-      instance = Purger.instance
-      instance.config!('localhost', 3128)
-    end
+    Purger.instance.instance_variable_set(:@zmq_context, context_mock)
+    Purger.instance.instance_variable_set(:@zmq_socket, socket_mock)
+    instance = Purger.instance
+    instance.config!('localhost', 3128)
 
     Purger.instance.purge(".*bla").must_equal :error
   end
@@ -89,10 +89,10 @@ describe Purger do
     socket_mock.expect(:recv_string, "ok", [""])
     context_mock = MiniTest::Mock.new
     context_mock.expect(:socket, socket_mock, [ZMQ::REQ])
-    ZMQ::Context.stub :new, context_mock do
-      instance = Purger.instance
-      instance.config!('localhost', 3128)
-    end
+    Purger.instance.instance_variable_set(:@zmq_context, context_mock)
+    Purger.instance.instance_variable_set(:@zmq_socket, socket_mock)
+    instance = Purger.instance
+    instance.config!('localhost', 3128)
 
     Purger.instance.purge(".*bla").must_be_nil
   end

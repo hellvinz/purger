@@ -18,14 +18,14 @@ Or install it yourself as:
 
 ## Usage
 
-The purger in a singleton that you need to configure via config!
+The purger in a singleton that you need to configure via config! (be sure to put the same address as in purgerd)
 
 To issue a purge call the method purge with a pattern (that varnish bans understand)
 
 ```
 require 'purger'
 purger = Purger.instance
-purger.config!(127.0.0.1, 8080) unless purger.configured
+purger.config!('127.0.0.1', '8080') unless purger.configured
 error = purger.purge(".*.jpg")
 puts 'purged!' unless error
 ```
