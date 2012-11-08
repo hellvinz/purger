@@ -15,7 +15,6 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Purger::VERSION
 
-  gem.add_dependency "ffi-rzmq"
   gem.add_development_dependency "minitest"
   gem.add_development_dependency "mocha"
   gem.add_development_dependency "yard"
