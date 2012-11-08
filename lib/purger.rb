@@ -37,10 +37,14 @@ class Purger
 
   def purge(pattern=".*")
     return :not_configured unless @configured
-    @zmq_socket.send_string(pattern)
-    response = ""
-    @zmq_socket.recv_string response
-    return nil
+    Timeout::timeout(5) {
+      @zmq_socket.send_string(pattern)
+      response = ""
+      @zmq_socket.recv_string response
+      return nil
+    }
+  rescue Timeout::Error
+    return :timeout
   rescue
     return :error
   end
